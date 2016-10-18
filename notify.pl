@@ -47,18 +47,22 @@ sub match_mention {
 	return match_nick($nick) || match_mention_cyr($nick);
 }
 
+sub validate_sender {
+	my ($sender) = @_;
+	return $sender && !($sender=~/ctcp/) && !match_nick($sender);
+}
+
 sub print_text_notify {
-	my ($dest, $text, $stripped) = @_;
+	my ($dest, $text, $msg) = @_;
 	my $server = $dest->{server};
 
-	return if (!$server);
+	return if !$server;
 
-	my $sender = $stripped;
-	$sender =~ s/^\<.([^\>]+)\>.+/\1/ ;
-	$stripped =~ s/^\<.[^\>]+\>.// ;
+	$msg =~ /^\<\W([^\>]+)\>.(.*)/;
+	my $sender   = $1;
+	my $stripped = $2;
 
-	return if $sender=~/ctcp/;
-	return if match_nick($sender);
+	return if !validate_sender($sender);
 
 	if (($dest->{level} & MSGLEVEL_HILIGHT) || match_mention($stripped) ) {
 		my $summary = $sender . " (" . $dest->{target} . ")";
