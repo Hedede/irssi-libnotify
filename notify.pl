@@ -89,8 +89,6 @@ sub ctcp_sound_notify {
 sub message_private_notify {
 	my ($server, $msg, $nick, $address) = @_;
 
-	Irssi::print $msg;
-
 	return if (!$server);
 	notify_send($server, $nick . " (PM)", $msg);
 }
